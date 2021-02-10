@@ -1,10 +1,12 @@
 import com.mongodb.client.FindIterable
-import org.bson.conversions.Bson
+import kotlinx.serialization.Serializable
 import org.litote.kmongo.*
 
-data class Student(val name: String, val group: String)
 
 fun main() {
+    @Serializable
+    data class Student(val name: String, val group: String)
+
     val client = KMongo
         .createClient("mongodb://root:vTnQMK3dxjFd@192.168.0.100:27017")
     val database = client.getDatabase("test") //normal java driver usage
