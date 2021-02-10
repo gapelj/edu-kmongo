@@ -4,7 +4,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import org.bson.Document
-import org.json.JSONObject
 import org.litote.kmongo.*
 
 fun main() {
@@ -16,7 +15,7 @@ fun main() {
         @SerialName("Year") val year: Int
     )
 
-    // get from https://datahub.io/core/population
+    // got from https://datahub.io/core/population
     val populationJson = Population::class.java.getResource("population_json.json")
         .readText()
     val populationCol = Json.decodeFromString(
@@ -25,70 +24,35 @@ fun main() {
     )
     println(populationCol.size)
 
-    val client = KMongo
-        .createClient("mongodb://root:vTnQMK3dxjFd@192.168.0.106:27017")
-    val database = client.getDatabase("test")
     val population = database.getCollection<Population>().apply { drop() }
 
     population.insertMany(populationCol)
 
-    println("___ Find year without index ___")
-    prettyPrintJson(
-        population
-            .find(Population::year eq 2000)
-            .explain(ExplainVerbosity.EXECUTION_STATS)
-            .json
-    )
+    println("\n --- Find year without index --- \n")
+    prettyPrintExplain(population.find(Population::year eq 2000))
 
     val yearIndex = population.createIndex(Document.parse("{'Year' : 1}"))
 
-    println("___ Find year with index ___")
-    prettyPrintJson(
-        population
-            .find(Population::year eq 2000)
-            .explain(ExplainVerbosity.EXECUTION_STATS)
-            .json
-    )
+    println("\n --- Find year with index --- \n")
+    prettyPrintExplain(population.find(Population::year eq 2000))
 
+    val bsonRequest = and(Population::code eq "RUS", Population::year gt 2000)
     prettyPrintJson(
         population
-            .find(and(Population::code eq "RUS", Population::year gt 2000))
+            .find(bsonRequest)
             .json,
-    true
+        true
     )
-    println("___ Find code and range years with year index ___")
-    prettyPrintJson(
-        population
-            .find(and(Population::code eq "RUS", Population::year gt 2000))
-            .explain(ExplainVerbosity.EXECUTION_STATS)
-            .json
-    )
+    println("\n --- Find code and range years with year index ---\n")
+    prettyPrintExplain(population.find(bsonRequest))
 
     population.dropIndex(yearIndex)
-    println("___ Find code and range years without index ___")
-    prettyPrintJson(
-        population
-            .find(and(Population::code eq "RUS", Population::year gt 2000))
-            .explain(ExplainVerbosity.EXECUTION_STATS)
-            .json
-    )
+    println("\n --- Find code and range years without index --- \n")
+    prettyPrintExplain(population.find(bsonRequest))
 
     val codeYearIndex = population.createIndex(Document.parse("{'Country Code' : 1, 'Year' : 1}"))
-    println("___ Find code and range years with code/year index ___")
-    prettyPrintJson(
-        population
-            .find(and(Population::code eq "RUS", Population::year gt 2000))
-            .explain(ExplainVerbosity.EXECUTION_STATS)
-            .json
-    )
+    println("\n --- Find code and range years with code/year index --- \n")
+    prettyPrintExplain(population.find(bsonRequest))
 }
 
-fun prettyPrintJson(json: String, printArray: Boolean = false) =
-    println(
-        JSONObject(
-            if (printArray)
-                "{ a: $json }"
-            else
-                json
-        ).toString(4)
-    )
+

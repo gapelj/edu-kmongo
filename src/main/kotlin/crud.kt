@@ -7,36 +7,33 @@ fun main() {
     @Serializable
     data class Student(val name: String, val group: String)
 
-    val client = KMongo
-        .createClient("mongodb://root:vTnQMK3dxjFd@192.168.0.100:27017")
-    val database = client.getDatabase("test") //normal java driver usage
-    val students = database.getCollection<Student>() //KMongo extension method
+    val students = database.getCollection<Student>().apply { drop() }
 
     println(" --- CREATE ---")
     students.insertOne(Student("Penny", "Girls"))
     students.insertOne("{'name': 'Amy', 'group': 'Girls' }")
     students.insertMany(
-        arrayOf("Sheldon", "Leonard").map { Student(it, "Boys") }
+        arrayOf("Sheldon", "Leonard", "Howard", "Raj").map { Student(it, "Boys") }
     )
 
-    println(" --- READ ---")
+    println("\n --- READ --- \n")
     println(students.find().toList())
     println(students.findOne("{name: 'Penny'}"))
-    val foundStudents: FindIterable<Student> = students.find(Student::group eq "Boys")
-    println(foundStudents.toList())
+    val foundStudents: FindIterable<Student> = students.find(Student::group eq "Boys").sort("{'name': 1}")
+    prettyPrintCursor(foundStudents)
 
-    println(" --- UPDATE ---")
+    println("\n --- UPDATE --- \n")
     students.updateOne(Student::name eq "Amy", setValue(Student::name, "Amy Farrah Fowler"))
-    println(students.find().toList())
+    prettyPrintCursor(students.find())
     students.updateMany("{'group' : 'Boys'}", "{'\$set' : {'group' : 'Man'}}")
-    println(students.find().toList())
+    prettyPrintCursor(students.find())
 
-    println(" --- DELETE ---")
+    println("\n --- DELETE --- \n")
     students.deleteOne("{name: 'Penny'}")
-    println(students.find().toList())
+    prettyPrintCursor(students.find())
     students.deleteMany(Student::group eq "Man")
-    println(students.find().toList())
+    prettyPrintCursor(students.find())
     students.drop()
-    println(students.find().toList())
+    prettyPrintCursor(students.find())
 }
 

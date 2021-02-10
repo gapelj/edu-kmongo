@@ -31,23 +31,20 @@ fun main() {
         val grades: List<Grade> = emptyList()
     )
 
-    val client = KMongo
-        .createClient("mongodb://root:vTnQMK3dxjFd@192.168.0.100:27017")
-    val database = client.getDatabase("test")
     val mStudents = database.getCollection<Student>().apply { drop() }
     val mCourses = database.getCollection<Course>().apply { drop() }
 
     // direction create session
 
     val students = listOf("Penny", "Amy").map { Student(it, "Girls") } +
-            listOf("Sheldon", "Leonard").map { Student(it, "Boys") }
+            listOf("Sheldon", "Leonard", "Howard", "Raj").map { Student(it, "Boys") }
     mStudents.insertMany(students)
     val courses = listOf("Math", "Phys", "History").map {
         Course(it, students.map { Grade(it.id, it.name) })
     }
     mCourses.insertMany(courses)
-    println(mStudents.find().toList())
-    println(mCourses.find().toList())
+    prettyPrintCursor(mStudents.find())
+    prettyPrintCursor(mCourses.find())
 
     // tutor set grade
     val math = mCourses.findOne { Course::name eq "Math" } !!
@@ -63,7 +60,7 @@ fun main() {
     setGrade(math, "Penny", 5)
     setGrade(math, "Sheldon", 6)
 
-    println(mCourses.findOne { Course::name eq "Math" })
+    prettyPrintCursor(mCourses.find(Course::name eq "Math" ))
 
 }
 
