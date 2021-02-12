@@ -34,7 +34,7 @@ fun main() {
     val mStudents = database.getCollection<Student>().apply { drop() }
     val mCourses = database.getCollection<Course>().apply { drop() }
 
-    // direction create session
+    println("\n --- Create study sheet --- \n")
 
     val students = listOf("Penny", "Amy").map { Student(it, "Girls") } +
             listOf("Sheldon", "Leonard", "Howard", "Raj").map { Student(it, "Boys") }
@@ -46,7 +46,8 @@ fun main() {
     prettyPrintCursor(mStudents.find())
     prettyPrintCursor(mCourses.find())
 
-    // tutor set grade
+    println("\n --- Set grade --- \n")
+
     val math = mCourses.findOne { Course::name eq "Math" } !!
 
     fun setGrade(course: Course, studentName: String, value: Int) {

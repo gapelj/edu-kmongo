@@ -1,4 +1,3 @@
-import com.mongodb.ExplainVerbosity
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
@@ -37,12 +36,8 @@ fun main() {
     prettyPrintExplain(population.find(Population::year eq 2000))
 
     val bsonRequest = and(Population::code eq "RUS", Population::year gt 2000)
-    prettyPrintJson(
-        population
-            .find(bsonRequest)
-            .json,
-        true
-    )
+    prettyPrintCursor(population.find(bsonRequest))
+
     println("\n --- Find code and range years with year index ---\n")
     prettyPrintExplain(population.find(bsonRequest))
 

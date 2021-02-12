@@ -10,16 +10,12 @@ val database = client.getDatabase("test")
 
 fun prettyPrintJson(json: String, printArray: Boolean = false) =
     println(
-        JSONObject(
-            if (printArray)
-                "{ a: $json }"
-            else
-                json
-        ).toString(4)
+        JSONObject(json)
+            .toString(4)
     )
 
 fun prettyPrintCursor(cursor: FindIterable<*>) =
-    prettyPrintJson(cursor.json, true)
+    prettyPrintJson("{ result: ${cursor.json} }")
 
 fun prettyPrintExplain(cursor: FindIterable<*>) =
     prettyPrintJson(cursor.explain(ExplainVerbosity.EXECUTION_STATS).json)
