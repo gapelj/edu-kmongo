@@ -5,16 +5,16 @@ import org.litote.kmongo.KMongo
 import org.litote.kmongo.json
 
 val client = KMongo
-    .createClient("mongodb://root:vTnQMK3dxjFd@192.168.0.106:27017")
+    .createClient("mongodb://root:vTnQMK3dxjFd@192.168.0.108:27017")
 val database = client.getDatabase("test")
 
-fun prettyPrintJson(json: String, printArray: Boolean = false) =
+fun prettyPrintJson(json: String) =
     println(
         JSONObject(json)
             .toString(4)
     )
 
-fun prettyPrintCursor(cursor: FindIterable<*>) =
+fun prettyPrintCursor(cursor: Iterable<*>) =
     prettyPrintJson("{ result: ${cursor.json} }")
 
 fun prettyPrintExplain(cursor: FindIterable<*>) =
