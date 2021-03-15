@@ -6,9 +6,7 @@ import java.util.*
 
 fun main() {
     println("\n --- Create filled study sheet --- \n")
-    val students = listOf("Penny", "Amy").map { Student(it, "Girls") } +
-            listOf("Sheldon", "Leonard", "Howard", "Raj").map { Student(it, "Boys") }
-    mStudents.insertMany(students)
+    val students = fillStudentsAndCourse(fillCourse = false)
     val values = listOf(
         listOf(5, 5, 5, 4, 4, 4),
         listOf(4, 4, 5, 4, 4, 4),

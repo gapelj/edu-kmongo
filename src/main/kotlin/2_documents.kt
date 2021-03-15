@@ -1,6 +1,5 @@
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.litote.kmongo.*
 import org.litote.kmongo.id.serialization.IdKotlinXSerializationModule
@@ -33,16 +32,23 @@ val json = Json { serializersModule = IdKotlinXSerializationModule }
 val mStudents = database.getCollection<Student>().apply { drop() }
 val mCourses = database.getCollection<Course>().apply { drop() }
 
-fun main() {
-
-    println("\n --- Create study sheet --- \n")
+fun fillStudentsAndCourse(fillCourse: Boolean = true): List<Student> {
     val students = listOf("Penny", "Amy").map { Student(it, "Girls") } +
             listOf("Sheldon", "Leonard", "Howard", "Raj").map { Student(it, "Boys") }
     mStudents.insertMany(students)
-    val courses = listOf("Math", "Phys", "History").map {
-        Course(it, students.map { Grade(it.id, it.name) })
+    if(fillCourse) {
+        val courses = listOf("Math", "Phys", "History").map {
+            Course(it, students.map { Grade(it.id, it.name) })
+        }
+        mCourses.insertMany(courses)
     }
-    mCourses.insertMany(courses)
+    return students
+}
+
+fun main() {
+
+    println("\n --- Create study sheet --- \n")
+    fillStudentsAndCourse()
     prettyPrintCursor(mStudents.find())
     prettyPrintCursor(mCourses.find())
 
@@ -61,4 +67,5 @@ fun main() {
     prettyPrintCursor(mCourses.find(Course::name eq "Math"))
 
 }
+
 
