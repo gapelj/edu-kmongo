@@ -1,11 +1,8 @@
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import org.bson.Document
 import org.litote.kmongo.*
 import java.util.*
 
-fun main() {
-    println("\n --- Create filled study sheet --- \n")
+fun fillStudentAndCourseWithGrades() {
     val students = fillStudentsAndCourse(fillCourse = false)
     val values = listOf(
         listOf(5, 5, 5, 4, 4, 4),
@@ -24,6 +21,11 @@ fun main() {
             )
         }
     mCourses.insertMany(courses)
+}
+
+fun main() {
+    println("\n --- Create filled study sheet --- \n")
+    fillStudentAndCourseWithGrades()
     prettyPrintCursor(mStudents.find())
     prettyPrintCursor(mCourses.find())
 
@@ -95,3 +97,4 @@ fun main() {
     )
 
 }
+
