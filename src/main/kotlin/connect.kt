@@ -6,7 +6,7 @@ import org.litote.kmongo.json
 
 val client = KMongo
     .createClient("mongodb://root:vTnQMK3dxjFd@192.168.0.108:27017")
-val database = client.getDatabase("test")
+val mongoDatabase = client.getDatabase("test")
 
 fun prettyPrintJson(json: String) =
     println(
